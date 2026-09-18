@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>อะตอมเคลื่อนไหว He และ C</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#081426;color:#eaf2ff;font:16px system-ui,sans-serif}
+main{max-width:1000px;margin:auto;padding:20px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+h1{font-size:clamp(22px,4vw,32px);margin:0}.tabs{display:flex;gap:8px;margin:18px 0}
+button{border:1px solid #315276;border-radius:10px;padding:10px 14px;background:#102746;color:#eaf2ff;font-weight:600;cursor:pointer}
+button[aria-pressed=true]{background:#0878ef;border-color:#49baff}.tabs button{flex:1}
+.layout{display:grid;grid-template-columns:1.1fr 1fr;gap:16px}.panel{background:#0d2039;border:1px solid #24466b;border-radius:16px;padding:16px;min-width:0}
+.stage{position:relative;background:radial-gradient(ellipse,#183b60,#07101c 75%);border-radius:12px;overflow:hidden}
+canvas{display:block;width:100%;height:320px}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#e4edf8}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.overlay{position:absolute;bottom:10px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}.controls input{flex:1;min-width:80px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}.stat,.fact{background:#102746;border:1px solid #24466b;border-radius:10px;padding:10px}.stat strong{display:block;font-size:24px}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.muted{color:#a9bfd9;font-size:13px}.section{font-size:18px;margin:0 0 12px}.shell{display:flex;align-items:center;gap:10px;margin:10px 0}.bar{height:8px;background:#213c5c;border-radius:8px;overflow:hidden;flex:1}.bar span{display:block;height:100%;background:#56b4e9}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{text-align:left;padding:9px 7px;border-bottom:1px solid #24466b}th{color:#a9bfd9}
+@media(max-width:700px){main{padding:12px}.layout{grid-template-columns:1fr}.panel{padding:12px}canvas{height:285px}}
+</style></head>
+<body><main>
+<div class="top"><div><div class="muted">แบบจำลองอะตอมเคลื่อนไหว</div><h1>ฮีเลียมและคาร์บอน</h1></div><span class="muted">He · C</span></div>
+<div class="tabs"><button data-atom="he" aria-pressed="true">ฮีเลียม (He)</button><button data-atom="c" aria-pressed="false">คาร์บอน (C)</button></div>
+<div class="layout">
+<section>
+<div class="stage"><canvas id="atom" aria-label="ภาพจำลองอะตอมเคลื่อนไหว"></canvas><div class="overlay"><div class="legend"><span><i class="dot" style="background:#ff7272"></i>โปรตอน</span><span><i class="dot" style="background:#b5c5d7"></i>นิวตรอน</span><span><i class="dot" style="background:#66d9ff"></i>อิเล็กตรอน</span></div><button id="play">Ⅱ หยุด</button></div></div>
+<div class="controls"><label for="speed" class="muted">ความเร็ว</label><input id="speed" type="range" min="0" max="3" step=".5" value="1"><span id="speedval">1×</span><button id="reset">เริ่มใหม่</button></div>
+<p class="muted">ภาพจำลองเพื่อการศึกษา ขนาดและระยะห่างไม่เป็นไปตามสัดส่วนจริง</p>
+</section>
+<section class="panel">
+<div class="muted">ข้อมูลธาตุ</div><h2 id="name" style="margin:3px 0">ฮีเลียม (He)</h2><p id="desc" class="muted">ก๊าซมีตระกูล ไม่มีสี ไม่มีกลิ่น</p>
+<div class="stats"><div class="stat"><span class="muted">โปรตอน</span><strong id="p">2</strong></div><div class="stat"><span class="muted">นิวตรอน</span><strong id="n">2</strong></div><div class="stat"><span class="muted">อิเล็กตรอน</span><strong id="e">2</strong></div></div>
+<div class="facts"><div class="fact"><span class="muted">เลขอะตอม</span><br><b id="z">2</b></div><div class="fact"><span class="muted">เลขมวล</span><br><b id="a">4</b></div><div class="fact"><span class="muted">มวลอะตอมเฉลี่ย</span><br><b id="weight">4.0026</b></div><div class="fact"><span class="muted">ประจุรวม</span><br><b>0</b></div></div>
+<h3 class="section" style="margin-top:16px">การจัดเรียงอิเล็กตรอน</h3><div id="shells"><div class="shell"><b>K</b><div class="bar"><span style="width:100%"></span></div>2 e⁻</div></div><p id="config" class="muted">1s²</p>
+<h3 class="section">ข้อมูลในตารางธาตุ</h3><div class="facts"><div class="fact"><span class="muted">หมู่</span><br><b id="group">18</b></div><div class="fact"><span class="muted">คาบ</span><br><b id="period">1</b></div><div class="fact"><span class="muted">บล็อก</span><br><b id="block">s</b></div><div class="fact"><span class="muted">สถานะที่ 25°C</span><br><b id="state">ก๊าซ</b></div><div class="fact"><span class="muted">ประเภท</span><br><b id="type">ก๊าซมีตระกูล</b></div></div>
+</section></div>
+<section class="panel" style="margin-top:16px"><h3 class="section">ประโยชน์ของธาตุ</h3><div class="layout"><div><b>ฮีเลียม (He)</b><p class="muted">ใช้เติมลูกโป่งและเรือเหาะ ใช้เป็นสารหล่อเย็นในเครื่อง MRI และงานวิจัยอุณหภูมิต่ำมาก เป็นก๊าซเฉื่อยและไม่ติดไฟ</p></div><div><b>คาร์บอน (C)</b><p class="muted">เป็นองค์ประกอบสำคัญของสิ่งมีชีวิต พบในเพชรและกราไฟต์ ใช้ผลิตไส้ดินสอ คาร์บอนไฟเบอร์ และถ่านกัมมันต์</p></div></div></section>
+<section class="panel" style="margin-top:16px"><h3 class="section">เปรียบเทียบฮีเลียมและคาร์บอน</h3><div style="overflow-x:auto"><table><thead><tr><th>คุณสมบัติ</th><th>ฮีเลียม</th><th>คาร์บอน</th></tr></thead><tbody id="compare"></tbody></table></div></section>
+<p class="muted">ไม่มีส่วนคำถาม–คำตอบ · ข้อมูลพื้นฐานจากตารางธาตุ IUPAC และ NIST</p>
+</main>
+<script>
+(()=>{const $=id=>document.getElementById(id),c=$('atom'),ctx=c.getContext('2d');
+const D={he:{name:'ฮีเลียม (He)',desc:'ก๊าซมีตระกูล ไม่มีสี ไม่มีกลิ่น',p:2,n:2,e:2,z:2,a:4,weight:'4.0026',group:18,period:1,block:'s',state:'ก๊าซ',type:'ก๊าซมีตระกูล',config:'1s²',shell:[2]},c:{name:'คาร์บอน (C)',desc:'อโลหะ ธาตุพื้นฐานของสิ่งมีชีวิต',p:6,n:6,e:6,z:6,a:12,weight:'12.011',group:14,period:2,block:'p',state:'ของแข็ง',type:'อโลหะ',config:'1s² 2s² 2p²',shell:[2,4]}};
+let key='he',angle=0,speed=1,running=true,last=0,raf=0;
+function draw(){let w=Math.max(1,c.clientWidth),h=Math.max(1,c.clientHeight),d=D[key],r=Math.min(w*.27,90),ratio=Math.min(devicePixelRatio||1,2);if(c.width!==Math.round(w*ratio)||c.height!==Math.round(h*ratio)){c.width=w*ratio;c.height=h*ratio}ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,w,h);let x=w/2,y=h/2-5,rs=[r,r*1.65];ctx.strokeStyle='rgba(170,210,255,.35)';rs.slice(0,d.shell.length).forEach(q=>{ctx.beginPath();ctx.ellipse(x,y,q,q*.72,-.25,0,Math.PI*2);ctx.stroke()});let n=d.p+d.n,cols=Math.ceil(Math.sqrt(n)),rows=Math.ceil(n/cols),pr=d.p===2?10:8;for(let i=0;i<n;i++){let px=x+(i%cols-(cols-1)/2)*pr*1.55+(Math.floor(i/cols)%2)*2,py=y+(Math.floor(i/cols)-(rows-1)/2)*pr*1.55;ctx.beginPath();ctx.arc(px,py,pr*.72,0,Math.PI*2);ctx.fillStyle=i<d.p?'#ff7272':'#b5c5d7';ctx.fill()}d.shell.forEach((n,s)=>{for(let i=0;i<n;i++){let a=angle*(s===0?1:.73)+i*Math.PI*2/n+s*.4;ctx.beginPath();ctx.arc(x+Math.cos(a)*rs[s],y+Math.sin(a)*rs[s]*.72,5.5,0,Math.PI*2);ctx.fillStyle='#66d9ff';ctx.shadowColor='#66d9ff';ctx.shadowBlur=10;ctx.fill();ctx.shadowBlur=0}})}
+function select(k){key=k;let d=D[k];document.querySelectorAll('[data-atom]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.atom===k));['name','desc','p','n','e','z','a','weight','group','period','block','state','type','config'].forEach(id=>$(id).textContent=d[id]);$('shells').innerHTML=d.shell.map((n,i)=>`<div class="shell"><b>${['K','L','M'][i]}</b><div class="bar"><span style="width:${n/(i?8:2)*100}%"></span></div>${n} e⁻</div>`).join('');$('compare').innerHTML=[['เลขอะตอม','2','6'],['เลขมวล','4','12'],['โปรตอน','2','6'],['นิวตรอน','2','6'],['อิเล็กตรอน','2','6'],['การจัดเรียง','1s²','1s² 2s² 2p²'],['หมู่','18','14'],['คาบ','1','2'],['ประเภท','ก๊าซมีตระกูล','อโลหะ']].map(a=>`<tr><td>${a[0]}</td><td>${a[1]}</td><td>${a[2]}</td></tr>`).join('');draw()}
+function animate(t){if(!running)return;if(t-last>25){angle+=(t-last)*.0006*speed;last=t;draw()}raf=requestAnimationFrame(animate)}function play(){cancelAnimationFrame(raf);running=true;last=0;$('play').textContent='Ⅱ หยุด';raf=requestAnimationFrame(animate)}
+document.querySelectorAll('[data-atom]').forEach(b=>b.onclick=()=>select(b.dataset.atom));$('play').onclick=()=>{running=!running;if(running)play();else{cancelAnimationFrame(raf);$('play').textContent='▶ เล่น'}};$('speed').oninput=e=>{speed=+e.target.value;$('speedval').textContent=speed+'×'};$('reset').onclick=()=>{angle=0;draw()};window.addEventListener('resize',draw);select('he');play();
+})();
+</script></body></html>
